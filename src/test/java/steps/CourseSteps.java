@@ -1,45 +1,33 @@
 package steps;
 
-import com.google.inject.Inject;
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import io.cucumber.java.en.When;
-import org.openqa.selenium.WebDriver;
+import io.cucumber.java.ru.И;
+import io.cucumber.java.ru.Когда;
+import io.cucumber.java.ru.Тогда;
 import pages.CourseCatalogPage;
-import commons.waiters.Waiters;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import jakarta.inject.Inject;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CourseSteps {
 
-  private final WebDriver driver;
-  private final Waiters waiters;
-  private final CourseCatalogPage courseCatalogPage;
-
   @Inject
-  public CourseSteps(WebDriver driver, Waiters waiters, CourseCatalogPage courseCatalogPage) {
-    this.driver = driver;
-    this.waiters = waiters;
-    this.courseCatalogPage = courseCatalogPage;
+  private CourseCatalogPage courseCatalogPage;
+
+  private String courseName;
+
+  @Когда("Я ищу курс {string}")
+  public void searchCourse(String name) {
+    this.courseName = name;
+    courseCatalogPage.searchForCourse(name);
   }
 
-  @Given("Я открываю страницу каталога курсов")
-  public void openCourseCatalogPage() {
-    courseCatalogPage.open(); // Используем метод open() из AbsBasePage
-  }
-
-  @When("Я ищу курс {string}")
-  public void searchForCourse(String courseName) {
-    courseCatalogPage.searchForCourse(courseName);
-  }
-
-  @Then("Я выбираю курс {string}")
-  public void selectCourse(String courseName) {
+  @И("Я выбираю найденный курс")
+  public void selectCourse() {
     courseCatalogPage.findAndClickCourseByName(courseName);
   }
 
-  @Then("Я проверяю, что открыта страница курса {string}")
-  public void verifyCoursePage(String expectedCourseName) {
-    String actualCourseName = courseCatalogPage.getPageHeader();
-    assertEquals(expectedCourseName, actualCourseName, "Открыта страница неверного курса.");
+  @Тогда("Я вижу страницу курса {string}")
+  public void verifyCoursePage(String expectedName) {
+    String actualName = courseCatalogPage.getPageHeader();
+    assertThat(actualName).isEqualTo(expectedName);
   }
 }

@@ -1,5 +1,13 @@
 package pages;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import annotations.Path;
 import com.google.inject.Inject;
 import commons.waiters.Waiters;
@@ -242,5 +250,63 @@ public class CourseCatalogPage extends AbsBasePage<CourseCatalogPage> {
   public boolean isCheckboxSelectedByIndex(int index) {
     List<WebElement> checkboxes = driver.findElements(CHECKBOXES_LOCATOR);
     return checkboxes.get(index).isSelected();
+  }
+
+  // Исправленный метод фильтрации
+  public CourseCatalogPage filterCoursesByDate(LocalDate date) {
+    List<String> dates = getCourseDates();
+    List<String> names = getCourseNames();
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM, yyyy", new Locale("ru"));
+
+    for (int i = 0; i < dates.size(); i++) {
+      String dateStr = dates.get(i).split(" · ")[0];
+      try {
+        LocalDate courseDate = LocalDate.parse(dateStr, formatter);
+        if (!courseDate.isBefore(date)) {
+          System.out.printf("Курс: %s, Дата: %s%n", names.get(i), dateStr);
+        }
+      } catch (DateTimeParseException e) {
+        System.out.println("Некорректный формат даты: " + dateStr);
+      }
+    }
+    return this;
+  }
+
+  // Исправленный метод поиска цен
+  public void findMinMaxPriceCourses() {
+    List<WebElement> priceElements = driver.findElements(
+        By.cssSelector(".sc-1x9oq14-0 .sc-1og4wiw-0"));
+
+    List<Double> prices = priceElements.stream()
+        .map(e -> {
+          try {
+            return Double.parseDouble(e.getText().replaceAll("[^\\d,]", "").replace(",", "."));
+          } catch (NumberFormatException ex) {
+            return Double.MAX_VALUE;
+          }
+        })
+        .collect(Collectors.toList());
+
+    double min = Collections.min(prices);
+    double max = Collections.max(prices);
+
+    List<String> names = getCourseNames();
+
+    System.out.printf("Самый дешевый: %s - %.2f руб.%n",
+        names.get(prices.indexOf(min)), min);
+    System.out.printf("Самый дорогой: %s - %.2f руб.%n",
+        names.get(prices.indexOf(max)), max);
+  }
+
+  public List<String> getCourseNames() {
+    return driver.findElements(COURSE_NAME).stream()
+        .map(WebElement::getText)
+        .collect(Collectors.toList());
+  }
+
+  public List<String> getCourseDates() {
+    return driver.findElements(COURSE_DATES).stream()
+        .map(WebElement::getText)
+        .collect(Collectors.toList());
   }
 }

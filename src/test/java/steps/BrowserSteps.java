@@ -1,11 +1,11 @@
 package steps;
 
-import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
-import jakarta.inject.Inject;
+import io.cucumber.java.ru.Когда;
+import io.cucumber.java.ru.Тогда;
 import org.openqa.selenium.WebDriver;
-import commons.waiters.Waiters;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import pages.MainPage;
+import jakarta.inject.Inject;
+//import javax.inject.Inject;
 
 public class BrowserSteps {
 
@@ -13,18 +13,15 @@ public class BrowserSteps {
   private WebDriver driver;
 
   @Inject
-  private Waiters waiters;
+  private MainPage mainPage;
 
-  @Given("Я открываю браузер {string}")
-  public void openBrowser(String browserName) {
-    // Браузер уже создан через GuiceModule, поэтому этот шаг может быть пустым.
-    // Если нужно переключить браузер, это можно сделать через конфигурацию системы.
-    System.out.println("Браузер " + browserName + " готов к использованию.");
+  @Когда("Я открываю браузер {string}")
+  public void openBrowser(String browser) {
+    System.setProperty("browser.name", browser);
   }
 
-  @Then("Браузер {string} успешно открыт")
-  public void verifyBrowserOpened(String browserName) {
-    assertNotNull(driver, "Браузер не был открыт.");
-    System.out.println("Браузер " + browserName + " успешно открыт.");
+  @Тогда("Я успешно открываю главную страницу")
+  public void openMainPage() {
+    mainPage.open();
   }
 }
