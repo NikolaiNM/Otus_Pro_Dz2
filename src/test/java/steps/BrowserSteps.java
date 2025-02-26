@@ -2,22 +2,21 @@ package steps;
 
 import io.cucumber.java.ru.Когда;
 import io.cucumber.java.ru.Тогда;
-import org.openqa.selenium.WebDriver;
-import pages.MainPage;
 import jakarta.inject.Inject;
-//import javax.inject.Inject;
+import pages.MainPage;
 
 public class BrowserSteps {
 
-  @Inject
-  private WebDriver driver;
+  private final MainPage mainPage;
 
   @Inject
-  private MainPage mainPage;
+  public BrowserSteps(MainPage mainPage) {
+    this.mainPage = mainPage;
+  }
 
   @Когда("Я открываю браузер {string}")
   public void openBrowser(String browser) {
-    System.setProperty("browser.name", browser);
+    System.setProperty("browser.name", browser.toLowerCase());
   }
 
   @Тогда("Я успешно открываю главную страницу")

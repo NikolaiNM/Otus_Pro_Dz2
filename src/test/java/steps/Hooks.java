@@ -1,24 +1,22 @@
 package steps;
 
+import com.google.inject.Inject;
 import io.cucumber.java.After;
-import io.cucumber.java.Before;
-import jakarta.inject.Inject;
 import org.openqa.selenium.WebDriver;
 
 public class Hooks {
 
-  @Inject
-  private WebDriver driver; // Исправлено: инжектим WebDriver вместо GuiceModule
+  private final WebDriver driver;
 
-  @Before
-  public void setUp() {
-    // Дополнительные настройки перед тестом
+  @Inject // ТОЛЬКО НА КОНСТРУКТОРЕ
+  public Hooks(WebDriver driver) {
+    this.driver = driver;
   }
 
   @After
   public void tearDown() {
     if (driver != null) {
-      driver.quit(); // Теперь метод quit() доступен
+      driver.quit();
     }
   }
 }

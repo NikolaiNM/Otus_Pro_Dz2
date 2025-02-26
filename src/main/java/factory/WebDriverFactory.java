@@ -10,7 +10,7 @@ import java.util.Locale;
 
 public class WebDriverFactory {
 
-  private String browserName = System.getProperty("browser.name").trim().toLowerCase(Locale.ROOT);
+  private String browserName = System.getProperty("browser.name", "chrome").trim().toLowerCase(Locale.ROOT);
 
   public WebDriver create() {
     switch (browserName) {

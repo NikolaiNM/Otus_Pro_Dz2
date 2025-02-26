@@ -1,21 +1,24 @@
 package commons.waiters;
 
-import com.google.inject.Inject;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import jakarta.inject.Inject;
 import java.time.Duration;
 
 public class Waiters {
-
-  private WebDriverWait webDriverWait;
+  private final WebDriverWait webDriverWait;
 
   @Inject
   public Waiters(WebDriver driver) {
     this.webDriverWait = new WebDriverWait(
         driver,
-        Duration.ofSeconds(Integer.parseInt(System.getProperty("webdriver.waiter.timeout")))
+        Duration.ofSeconds(
+            Integer.parseInt(
+                System.getProperty("webdriver.waiter.timeout", "5") // Добавлены 2 закрывающие скобки
+            )
+        )
     );
   }
 
@@ -28,6 +31,7 @@ public class Waiters {
     }
   }
 
+  // Остальные методы остаются без изменений
   public boolean waitForElementByLocator(By locator) {
     return this.waitForCondition(ExpectedConditions.presenceOfElementLocated(locator));
   }

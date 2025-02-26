@@ -4,41 +4,24 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import commons.waiters.Waiters;
-import components.AdsBlock;
 import factory.WebDriverFactory;
 import org.openqa.selenium.WebDriver;
-import pages.CourseCatalogPage;
-import pages.MainPage;
 
 public class GuiceModule extends AbstractModule {
 
-  private WebDriver driver;
-
-  public GuiceModule() {
-    driver = new WebDriverFactory().create();
+  @Provides @Singleton
+  public WebDriver provideWebDriver() {
+    String browser = System.getProperty("browser.name", "chrome");
+    return new WebDriverFactory().create();
   }
 
-  @Provides
-  private WebDriver getDriver() {
-    return this.driver;
+  @Override
+  protected void configure() {
+    // Не требует явных привязок при использовании конструкторов с @Inject
   }
 
-  @Singleton
-  @Provides
-  public MainPage getMainPage(WebDriver driver, Waiters waiters) {
-    return new MainPage(driver, waiters);
+  @Provides @Singleton
+  public Waiters provideWaiters(WebDriver driver) {
+    return new Waiters(driver);
   }
-
-  @Singleton
-  @Provides
-  public CourseCatalogPage getCourseCatalogPage(WebDriver driver, Waiters waiters) {
-    return new CourseCatalogPage(driver, waiters);
-  }
-
-  @Singleton
-  @Provides
-  public AdsBlock getAdbBlock() {
-    return new AdsBlock(driver);
-  }
-
 }
